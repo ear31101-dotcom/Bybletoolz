@@ -1,0 +1,8 @@
+bible.db
+.DS_Store
+data/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+Add ons/*.pdf
