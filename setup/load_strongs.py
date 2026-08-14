@@ -38,7 +38,7 @@ def load(cur):
         rows = []
         for number, entry in data.items():
             word       = entry.get("lemma", "")
-            translit   = entry.get("translit", "")
+            translit   = entry.get("xlit", "") or entry.get("translit", "")
             gloss      = entry.get("strongs_def", "") or entry.get("kjv_def", "")
             definition = entry.get("strongs_def", "")
             root       = ""
