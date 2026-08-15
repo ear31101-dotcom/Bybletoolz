@@ -598,6 +598,35 @@ def _parse_andrews_rows(dict_rows):
             # skip bare title/heading lines ("GENESIS", "INTRODUCTION")
             if text.isupper() and len(text.split()) <= 3:
                 continue
+            # skip PDF sidebar/column artifacts — four signatures:
+            #   1. ends with a hyphen (narrow-column line wrap, e.g. "veg-")
+            #   2. ≤ 6 words with no terminal punctuation (partial headings
+            #      like "Days of", "Chronicles the", "of")
+            #   3. short line (< 110 chars) that doesn't end with sentence-
+            #      terminal punctuation — narrow sidebar columns produce lines
+            #      of ~35–90 chars that break mid-sentence
+            #   4. starts with lowercase — either a sidebar continuation line
+            #      or a sidebar-tail merged with main text; in the latter case
+            #      strip the sidebar prefix up to the first ". [A-Z]" boundary
+            #      and keep the remainder only if it is substantive (≥ 30 chars)
+            if text.endswith("-"):
+                continue
+            words = text.split()
+            if len(words) <= 6 and not re.search(r'[.!?:;,)]$', text):
+                continue
+            if len(text) < 110 and not re.search(r'[.!?:"]$', text):
+                continue
+            if text and text[0].islower():
+                m = re.search(r'\.\s+([A-Z])', text)
+                if m:
+                    remainder = text[m.start(1):].strip()
+                    # remainder must be substantive AND end with terminal punct
+                    if len(remainder) >= 30 and re.search(r'[.!?"]$', remainder):
+                        text = remainder
+                    else:
+                        continue
+                else:
+                    continue
             key = (book, 0, 0, 0, 0)
             if key != current_key:
                 _flush()
