@@ -16,34 +16,6 @@ byble import exeg "Add ons/Commentary Library (gitignore)/<file>.csv" "Source Na
 
 ---
 
-## Supported Sources
-
-### OT Commentary — Advanced Structured CSV
-
-**Coverage:** Genesis through Malachi (39 books)  
-**Format:** Advanced Structured CSV  
-**Includes:** Verse notes, book introductions, thematic articles
-
-Notes are organized by verse range with cross-chapter scope support (e.g. Genesis 1:1–11:26). Includes book-level introductions for each OT book and standalone thematic articles browsable via `byble exeg`.
-
-```bash
-byble import exeg "Add ons/Commentary Library (gitignore)/ot_commentary.csv" "OT Commentary"
-```
-
----
-
-### NT Commentary — Advanced Structured CSV
-
-**Coverage:** Matthew through Revelation (27 books)  
-**Format:** Advanced Structured CSV  
-**Includes:** Verse notes, book introductions, thematic articles
-
-```bash
-byble import exeg "Add ons/Commentary Library (gitignore)/nt_commentary.csv" "NT Commentary"
-```
-
----
-
 ## Adding Your Own Sources
 
 Any CSV or e-Sword `.cmtx` file can be imported. See [`CSV_IMPORT_GUIDE.md`](CSV_IMPORT_GUIDE.md) for how to structure CSV data.
