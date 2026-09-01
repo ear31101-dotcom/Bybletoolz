@@ -42,7 +42,7 @@ Luke,1,1,,"The prologue of Luke establishes the author's historical method..."
 
 ### Format 2 — Advanced Structured (Multi-column scope)
 
-Best for academic commentaries where notes span multiple chapters, include book introductions, and were extracted from a PDF via a structuring script. This is the format used by `Andrews OT.csv`.
+Best for academic commentaries where notes span multiple chapters, include book introductions, and extra articles.
 
 **Required columns:**
 
