@@ -44,21 +44,6 @@ byble import exeg "Add ons/Commentary Library (gitignore)/nt_commentary.csv" "NT
 
 ---
 
-### SDA Bible Commentary — Advanced Structured CSV
-
-**Full title:** Seventh-day Adventist Bible Commentary  
-**Publisher:** Review and Herald Publishing Association (1953–1957)  
-**Coverage:** Full Bible (Genesis through Revelation)  
-**Format:** Advanced Structured CSV
-
-The classic multi-volume SDA commentary. Notes are verse-anchored and include Ellen G. White cross-references alongside standard exegetical content.
-
-```bash
-byble import exeg "Add ons/Commentary Library (gitignore)/sda_bible_commentary.csv" "SDA Bible Commentary"
-```
-
----
-
 ## Adding Your Own Sources
 
 Any CSV or e-Sword `.cmtx` file can be imported. See [`CSV_IMPORT_GUIDE.md`](CSV_IMPORT_GUIDE.md) for how to structure CSV data.
