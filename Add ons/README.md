@@ -1,47 +1,70 @@
 # Add-ons
 
-This folder contains exegetical commentary sources that can be imported into Bybletoolz for use with the `Exeg` study mode.
+This folder contains documentation for importing exegetical commentary into Bybletoolz for use with the `Exeg` study mode. Personal commentary files are stored locally in `Commentary Library (gitignore)/` and are not tracked by git.
 
 ---
 
-## Included Sources
+## Commentary Library
 
-### OT Commentary (Advanced Structured CSV)
+The `Commentary Library (gitignore)/` subfolder holds CSV files for import. It is gitignored — its contents never appear on GitHub.
 
-**Coverage:** Genesis through Malachi (39 books)  
-**Format:** Advanced Structured CSV (see import guide)
+Place any commentary CSVs there and import with:
 
-An academic commentary on the Old Testament. Notes are organized by verse range and include book-level introductions for each OT book. Coverage includes exegetical analysis, historical background, literary structure, and theological themes. Cross-chapter note ranges are preserved (e.g. Genesis 1:1–11:26).
-
-**Import command:**
 ```bash
-byble import exeg "Add ons/<your_file>.csv" "OT Commentary"
+byble import exeg "Add ons/Commentary Library (gitignore)/<file>.csv" "Source Name"
 ```
 
 ---
 
-### SDA Bible Commentary (`sda_bible_commentary.csv`)
+## Supported Sources
+
+### OT Commentary — Advanced Structured CSV
+
+**Coverage:** Genesis through Malachi (39 books)  
+**Format:** Advanced Structured CSV  
+**Includes:** Verse notes, book introductions, thematic articles
+
+Notes are organized by verse range with cross-chapter scope support (e.g. Genesis 1:1–11:26). Includes book-level introductions for each OT book and standalone thematic articles browsable via `byble exeg`.
+
+```bash
+byble import exeg "Add ons/Commentary Library (gitignore)/ot_commentary.csv" "OT Commentary"
+```
+
+---
+
+### NT Commentary — Advanced Structured CSV
+
+**Coverage:** Matthew through Revelation (27 books)  
+**Format:** Advanced Structured CSV  
+**Includes:** Verse notes, book introductions, thematic articles
+
+```bash
+byble import exeg "Add ons/Commentary Library (gitignore)/nt_commentary.csv" "NT Commentary"
+```
+
+---
+
+### SDA Bible Commentary — Advanced Structured CSV
 
 **Full title:** Seventh-day Adventist Bible Commentary  
 **Publisher:** Review and Herald Publishing Association (1953–1957)  
 **Coverage:** Full Bible (Genesis through Revelation)  
-**Format:** Advanced Structured CSV (see import guide)
+**Format:** Advanced Structured CSV
 
-The classic multi-volume SDA commentary covering the entire Bible. Notes are verse-anchored and include Ellen G. White cross-references alongside standard exegetical content. Coverage varies by book — some books have dense verse-by-verse notes while others are lighter.
+The classic multi-volume SDA commentary. Notes are verse-anchored and include Ellen G. White cross-references alongside standard exegetical content.
 
-**Import command:**
 ```bash
-byble import exeg "Add ons/sda_bible_commentary.csv" "SDA Bible Commentary"
+byble import exeg "Add ons/Commentary Library (gitignore)/sda_bible_commentary.csv" "SDA Bible Commentary"
 ```
 
 ---
 
 ## Adding Your Own Sources
 
-You can import additional commentary sources in CSV or XLSX format. See [`CSV_IMPORT_GUIDE.md`](CSV_IMPORT_GUIDE.md) for how to structure the data.
+Any CSV or e-Sword `.cmtx` file can be imported. See [`CSV_IMPORT_GUIDE.md`](CSV_IMPORT_GUIDE.md) for how to structure CSV data.
 
 ```bash
-byble import exeg "Add ons/my_source.csv" "My Commentary"
+byble import exeg "Add ons/Commentary Library (gitignore)/my_source.csv" "My Commentary"
 byble import list
 ```
 
@@ -50,8 +73,9 @@ byble import list
 ## Viewing Imported Commentary
 
 ```bash
-byble Gen Exeg              # Book introduction
-byble Gen 1 Exeg            # Full chapter notes
-byble Gen 1:1 Exeg          # Single verse
-byble Gen 1:1-5 Exeg        # Verse range
+byble Gen Exeg          # Book introduction
+byble Gen 1 Exeg        # Full chapter notes
+byble Gen 1:1 Exeg      # Single verse
+byble Gen 1:1-5 Exeg    # Verse range
+byble exeg              # Browse standalone articles across all sources
 ```
