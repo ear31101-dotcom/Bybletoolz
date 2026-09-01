@@ -1,6 +1,6 @@
 # Add-ons
 
-This folder contains documentation for importing exegetical commentary into Bybletoolz for use with the `Exeg` study mode. Personal commentary files are stored locally in `Commentary Library (gitignore)/` and are not tracked by git.
+This folder contains documentation for importing exegetical commentary into Bybletoolz for use with the `Exeg` study mode. 
 
 ---
 
