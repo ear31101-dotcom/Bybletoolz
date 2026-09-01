@@ -35,7 +35,7 @@ Parses raw CLI tokens into a structured dict:
 }
 ```
 
-Supports five reference scopes:
+Supports six reference scopes:
 
 | Input | Scope |
 |-------|-------|
@@ -43,7 +43,8 @@ Supports five reference scopes:
 | `byble Gen 1 Exeg` | Chapter only |
 | `byble Gen 1:1 Lex` | Single verse |
 | `byble Gen 1:1-5 Con` | Verse range |
-| `byble Con H7225` | Mode-first, no reference |
+| `byble Con H7225` | Mode-first, no reference (full Bible) |
+| `byble Exeg` | Mode-only, no book (article browser) |
 
 ---
 
@@ -87,15 +88,16 @@ Displays thematically and textually linked passages for a verse or range. Suppor
 
 ## `exeg.py` — Exegesis / Commentary
 
-Displays imported commentary notes matched to the requested scope. Three scope modes:
+Displays imported commentary notes matched to the requested scope. Four scope modes:
 
 | Scope | Query logic |
 |-------|-------------|
+| No book (`byble Exeg`) | Lists all standalone articles across sources; user selects one to read |
 | Book (`byble Gen Exeg`) | Fetches notes stored at `chapter=0, verse=0` (book introductions) |
 | Chapter (`byble Gen 1 Exeg`) | Fetches notes where `chapter <= target <= chapter_end` |
 | Verse/range | Fetches notes overlapping `[v_start, v_end]` using `(chapter * 1000 + verse)` arithmetic for cross-chapter ranges |
 
-Performs a migration check at runtime to add `verse_end` and `chapter_end` columns if the database predates them.
+Performs a migration check at runtime to add `verse_end`, `chapter_end`, and `article_title` columns if the database predates them.
 
 **Key tables:** `commentary`, `commentary_sources`
 
@@ -112,6 +114,15 @@ Handles all `byble import` subcommands. Detects file format automatically:
 | XLSX | `.xlsx` file extension (same layout detection inside) |
 | e-Sword commentary (`.cmtx`) | SQLite file with `Commentary` table |
 
+**Advanced Structured CSV** supports four `assignment_source` values:
+
+| Value | Behaviour |
+|-------|-----------|
+| `explicit_scope` | Row anchored to specific chapter/verse range |
+| `carried_scope` | Inherits scope from previous `explicit_scope` row |
+| `book_introduction` | Stored at `chapter=0, verse=0`; shown at book scope |
+| `article` | Standalone thematic article; `book` column = `"Article"`, title in `chapter_start` |
+
 Re-importing a source with the same name deletes the old notes first before inserting the new ones.
 
 **Key tables:** `commentary`, `commentary_sources`, `cross_references`, `custom_strongs`
@@ -126,7 +137,7 @@ Re-importing a source with the same name deletes the old notes first before inse
 | `verse_words` | Word-level tagging with Strong's numbers |
 | `strongs` | Strong's Hebrew and Greek lexicon entries |
 | `cross_references` | 430,000+ verse cross-reference pairs |
-| `commentary` | Imported exegetical notes (verse/range anchored) |
+| `commentary` | Imported exegetical notes — verse, book intro, and article rows |
 | `commentary_sources` | Metadata and book coverage per imported source |
 
 ---
