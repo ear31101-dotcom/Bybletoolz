@@ -6,4 +6,5 @@ __pycache__/
 *.pyc
 *.pyo
 Add ons/*.pdf
-Add ons/Andrews OT.csv
+Add ons/*.csv
+Add ons/Commentary Library (gitignore)/
