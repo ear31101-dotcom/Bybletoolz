@@ -1,4 +1,4 @@
-# Add-ons
+# Import Info
 
 This folder contains documentation for importing exegetical commentary into Bybletoolz for use with the `Exeg` study mode. 
 
@@ -9,7 +9,7 @@ This folder contains documentation for importing exegetical commentary into Bybl
 Any CSV or e-Sword `.cmtx` file can be imported. See [`CSV_IMPORT_GUIDE.md`](CSV_IMPORT_GUIDE.md) for how to structure CSV data.
 
 ```bash
-byble import exeg "Add ons/Commentary Library (gitignore)/my_source.csv" "My Commentary"
+byble import exeg "Import Info/Commentary Library (gitignore)/my_source.csv" "My Commentary"
 byble import list
 ```
 

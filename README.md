@@ -47,18 +47,18 @@ byble John 3:16 YLT
 Import any CSV or XLSX commentary source:
 
 ```bash
-byble import exeg "Add ons/my_commentary.csv" "Source Name"
+byble import exeg "Import Info/Commentary Library (gitignore)/my_commentary.csv" "Source Name"
 byble import list
 ```
 
-See [`Add ons/CSV_IMPORT_GUIDE.md`](Add%20ons/CSV_IMPORT_GUIDE.md) for how to structure import files.
+See [`Import Info/CSV_IMPORT_GUIDE.md`](Import%20Info/CSV_IMPORT_GUIDE.md) for how to structure import files.
 
-## Add-ons Included
+## Import Info
 
 | File | Description |
 |------|-------------|
-| `Add ons/<your_commentary>.csv` | Commentary in Advanced Structured format (see Add ons/CSV_IMPORT_GUIDE.md) |
-| `Add ons/sda_bible_commentary.csv` | SDA Bible Commentary verse notes |
+| `Import Info/CSV_IMPORT_GUIDE.md` | Guide to structuring CSV files for import |
+| `Import Info/README.md` | This file |
 
 > **Note:** `bible.db` and the `data/` folder are not tracked in git (too large). Run `setup/build_db.py` to generate them locally.
 
