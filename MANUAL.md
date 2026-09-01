@@ -213,6 +213,12 @@ byble Gen 1 Exeg "SDA Bible Commentary"
 
 At verse or range scope, output is grouped by source with verse labels. At chapter scope, output is grouped by verse with the source name shown under each verse — useful for reading through a chapter's commentary in canonical order.
 
+**Browse standalone articles** — some imported sources include thematic articles not anchored to a specific verse (e.g. introductions, topical essays, chronology charts). Run `byble exeg` with no book to see a numbered list of all articles across all sources:
+```bash
+byble exeg
+```
+You are shown a numbered index of article titles and their sources. Enter a number to read the full text. Articles are stored in the Advanced Structured CSV format using `book=Article` and `assignment_source=article` — see the import guide for details.
+
 **Recommended public domain sources** (free to download as e-Sword `.cmtx` modules from e-sword.net):
 
 | Source | Coverage | Strength |
@@ -396,7 +402,7 @@ For notes that span multiple chapters, use the Advanced Structured layout instea
 
 *Embedded-verse layout* — `section, chapter, text` where each text cell begins with a verse reference (`1`, `1-3`, `16, 17`, etc.). Continuation paragraphs with no leading verse ref are merged into the preceding note. Matches the SDA Bible Commentary export format.
 ```
-byble import exeg  sda_bible_commentary.xlsx  "SDA Bible Commentary"
+byble import exeg  my_commentary.xlsx  "My Commentary"
 ```
 
 *Advanced Structured layout* — `book, chapter_start, verse_start, chapter_end, verse_end, assignment_source, text`. Used for scholarly commentary exports where each paragraph carries explicit scope metadata. Only rows with `assignment_source` of `explicit_scope`, `carried_scope`, `book_introduction`, or `article` are imported; paragraphs sharing the same scope are merged into a single note. Supports cross-chapter ranges (e.g. `Genesis 1:1–11:26`). Works as both CSV and XLSX.
@@ -484,6 +490,7 @@ Exeg book intro   byble Gen Exeg
 Exeg verse        byble Gen 1:1 Exeg
 Exeg chapter      byble Gen 1 Exeg
 Exeg one source   byble Gen 1:1 Exeg "Matthew Henry"
+Exeg articles     byble exeg
 
 Import xref       byble import xref  file.csv   "Source Name"
 Import lexicon    byble import lex   file.csv   "Source Name"
