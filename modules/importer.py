@@ -102,14 +102,15 @@ def _ensure_custom_tables(cur):
         );
 
         CREATE TABLE IF NOT EXISTS commentary (
-            id          INTEGER PRIMARY KEY AUTOINCREMENT,
-            source_name TEXT NOT NULL,
-            book        TEXT NOT NULL,
-            chapter     INTEGER NOT NULL,
-            verse       INTEGER NOT NULL,
-            chapter_end INTEGER NOT NULL DEFAULT 0,
-            verse_end   INTEGER NOT NULL DEFAULT 0,
-            text        TEXT NOT NULL
+            id            INTEGER PRIMARY KEY AUTOINCREMENT,
+            source_name   TEXT NOT NULL,
+            book          TEXT NOT NULL,
+            chapter       INTEGER NOT NULL,
+            verse         INTEGER NOT NULL,
+            chapter_end   INTEGER NOT NULL DEFAULT 0,
+            verse_end     INTEGER NOT NULL DEFAULT 0,
+            text          TEXT NOT NULL,
+            article_title TEXT
         );
 
         CREATE TABLE IF NOT EXISTS commentary_sources (
@@ -135,6 +136,8 @@ def _ensure_custom_tables(cur):
     if "chapter_end" not in cols:
         cur.execute("ALTER TABLE commentary ADD COLUMN chapter_end INTEGER NOT NULL DEFAULT 0")
         cur.execute("UPDATE commentary SET chapter_end = chapter WHERE chapter_end = 0")
+    if "article_title" not in cols:
+        cur.execute("ALTER TABLE commentary ADD COLUMN article_title TEXT")
 
 
 def display(args, db_path):
@@ -456,12 +459,12 @@ def _read_xlsx_commentary(path):
                 continue
         return rows
 
-    # ── Andrews structured layout ──
+    # ── Advanced Structured layout ──
     if "chapter_start" in headers and "book" in headers and "text" in headers:
         data = []
         for row in raw[1:]:
             data.append({headers[i]: (str(row[i]).strip() if row[i] is not None else "") for i in range(len(headers))})
-        return _parse_andrews_rows(data)
+        return _parse_structured_rows(data)  # returns (verse_rows, article_rows)
 
     # ── embedded-verse layout (SDA-style) ──
     if "section" in headers and "chapter" in headers and "text" in headers:
@@ -550,18 +553,31 @@ def _parse_verse_int(raw):
     return int(m.group(1)) if m else None
 
 
-def _parse_andrews_rows(dict_rows):
+def _parse_structured_rows(dict_rows):
     """
-    Shared parser for Andrews structured commentary rows (CSV or XLSX).
+    Shared parser for Advanced Structured commentary rows (CSV or XLSX).
     Expects each row to be a dict with lowercase keys including:
       book, chapter_start, verse_start, chapter_end, verse_end, assignment_source, text
-    Only rows with assignment_source in (explicit_scope, carried_scope) and
-    a valid book/chapter/verse are imported.
-    Paragraphs sharing the same scope are merged into one note.
+
+    Returns a tuple: (verse_rows, article_rows)
+      verse_rows   — list of (book, ch_s, vs, ch_e, ve, text) for standard notes
+      article_rows — list of (title, text) for assignment_source='article' rows
+                     where book='Article' and chapter_start holds the title
+
+    Article rows in the CSV:
+      book,chapter_start,...,assignment_source,text
+      Article,My Title,,,,article,"Paragraph one..."
+      Article,My Title,,,,article,"Paragraph two..."
+
+    Only rows with assignment_source in (explicit_scope, carried_scope, book_introduction,
+    article) are imported. Paragraphs sharing the same scope/title are merged.
     """
     rows = []
+    article_rows = []
     current_key  = None
     current_text = []
+    current_article_title = None
+    current_article_text  = []
 
     def _flush():
         if current_key and current_text:
@@ -581,12 +597,41 @@ def _parse_andrews_rows(dict_rows):
             if merged:
                 rows.append((book, ch_s, vs, ch_e, ve, merged))
 
+    def _flush_article():
+        if current_article_title and current_article_text:
+            merged = "\n\n".join(current_article_text).strip()
+            if merged:
+                article_rows.append((current_article_title, merged))
+
     for r in dict_rows:
         src = r.get("assignment_source", "").strip()
-        if src not in ("explicit_scope", "carried_scope", "book_introduction"):
+        if src not in ("explicit_scope", "carried_scope", "book_introduction", "article"):
+            _flush()
+            _flush_article()
+            current_key           = None
+            current_text          = []
+            current_article_title = None
+            current_article_text  = []
+            continue
+
+        # ── article rows ──────────────────────────────────────────────────────
+        if src == "article":
+            book_col = r.get("book", "").strip()
+            if book_col.lower() != "article":
+                continue  # malformed — book column must be "Article"
+            title = r.get("chapter_start", "").strip()
+            text  = r.get("text", "").strip()
+            if not title or not text:
+                continue
             _flush()
             current_key  = None
             current_text = []
+            if title != current_article_title:
+                _flush_article()
+                current_article_title = title
+                current_article_text  = [text]
+            else:
+                current_article_text.append(text)
             continue
 
         # book introductions stored at chapter=0, verse=0 (book-level sentinel)
@@ -662,20 +707,22 @@ def _parse_andrews_rows(dict_rows):
             current_text.append(text)
 
     _flush()
-    return rows
+    _flush_article()
+    return rows, article_rows
 
 
-def _read_andrews_csv(path):
-    """Parse the Andrews Bible Commentary structured CSV format."""
+def _read_structured_csv(path):
+    """Parse an Advanced Structured commentary CSV.
+    Returns (verse_rows, article_rows) or (None, None) on error."""
     delim = _detect_delimiter(path)
     try:
         with open(path, "r", encoding="utf-8-sig") as f:
             reader = csv.DictReader(f, delimiter=delim)
             dict_rows = [{k.lower().strip(): v for k, v in row.items()} for row in reader]
     except Exception as e:
-        console.print(f"[red]Error reading Andrews CSV: {e}[/red]")
-        return None
-    return _parse_andrews_rows(dict_rows)
+        console.print(f"[red]Error reading structured CSV: {e}[/red]")
+        return None, None
+    return _parse_structured_rows(dict_rows)
 
 
 # ── e-Sword helpers ───────────────────────────────────────────────────────────
@@ -733,22 +780,27 @@ def _read_esword_lex(path):
 
 def _import_exeg(cur, con, path, name):
     ext = os.path.splitext(path)[1].lower()
+    article_rows = []
 
     if ext in (".db", ".sqlite", ".sqlite3", ".cmtx"):
         rows = _read_esword_commentary(path)
         fmt = "e-Sword"
     elif ext in (".xlsx", ".xls"):
-        rows = _read_xlsx_commentary(path)
+        result = _read_xlsx_commentary(path)
+        if isinstance(result, tuple):
+            rows, article_rows = result
+        else:
+            rows = result
         fmt = "XLSX"
     else:
-        # detect Andrews structured CSV by presence of chapter_start column
+        # detect Advanced Structured CSV by presence of chapter_start column
         delim = _detect_delimiter(path)
         with open(path, "r", encoding="utf-8-sig") as f:
             first_line = f.readline()
         headers = {h.lower().strip() for h in first_line.split(delim)}
         if "chapter_start" in headers:
-            rows = _read_andrews_csv(path)
-            fmt = "Andrews CSV"
+            rows, article_rows = _read_structured_csv(path)
+            fmt = "Structured CSV"
         else:
             rows = _read_csv_commentary(path)
             fmt = "CSV/TSV"
@@ -758,14 +810,29 @@ def _import_exeg(cur, con, path, name):
 
     cur.execute("DELETE FROM commentary WHERE source_name=?", (name,))
     cur.execute("DELETE FROM commentary_sources WHERE source_name=?", (name,))
+
+    # insert verse/book-introduction notes
     cur.executemany(
         "INSERT INTO commentary (source_name, book, chapter, verse, chapter_end, verse_end, text) VALUES (?,?,?,?,?,?,?)",
         [(name, r[0], r[1], r[2], r[3], r[4], r[5]) for r in rows],
     )
 
-    # build coverage summary from what was actually loaded
-    books_in_source = sorted({r[0] for r in rows}, key=lambda b: ALL_BOOKS.index(b) if b in ALL_BOOKS else 999)
+    # insert article rows — stored with book='Article', chapter=-1, verse=-1
+    if article_rows:
+        cur.executemany(
+            "INSERT INTO commentary (source_name, book, chapter, verse, chapter_end, verse_end, text, article_title) VALUES (?,?,?,?,?,?,?,?)",
+            [(name, "Article", -1, -1, -1, -1, text, title) for title, text in article_rows],
+        )
+
+    # build coverage summary — exclude the sentinel "Article" book
+    books_in_source = sorted(
+        {r[0] for r in rows if r[0] in ALL_BOOKS},
+        key=lambda b: ALL_BOOKS.index(b),
+    )
     coverage = _summarize_coverage(books_in_source)
+    if article_rows:
+        coverage = (coverage + f", {len(article_rows)} article(s)") if coverage else f"{len(article_rows)} article(s)"
+
     cur.execute(
         "INSERT OR REPLACE INTO commentary_sources (source_name, data_type, verse_count, books_covered) VALUES (?,?,?,?)",
         (name, fmt, len(rows), coverage),
@@ -773,6 +840,8 @@ def _import_exeg(cur, con, path, name):
 
     con.commit()
     console.print(f"  Imported [green]{len(rows):,}[/green] commentary notes from {fmt} as [yellow]\"{name}\"[/yellow].")
+    if article_rows:
+        console.print(f"  Imported [green]{len(article_rows):,}[/green] article(s).")
     console.print(f"  Coverage: [dim]{coverage}[/dim]")
 
 

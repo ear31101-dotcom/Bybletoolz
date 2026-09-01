@@ -63,9 +63,35 @@ Best for academic commentaries where notes span multiple chapters, include book 
 | `explicit_scope`   | The row's chapter/verse columns are directly filled in              |
 | `carried_scope`    | The row inherits scope from the previous `explicit_scope` row       |
 | `book_introduction`| The row belongs to the book's introduction (stored at chapter 0)   |
+| `article`          | A standalone thematic article (see Article Rows below)              |
 | `unassigned`       | Ignored — front matter, page headers, copyright text, etc.          |
 
 **Multi-paragraph notes:** consecutive rows sharing the same scope are merged into a single note with paragraph breaks (`\n\n`). You do not need to merge them manually.
+
+---
+
+### Article Rows (inside Format 2 files)
+
+Use `assignment_source = article` for standalone thematic articles that are not anchored to a specific verse or book. The `book` column must be the literal word `Article`; the `chapter_start` column holds the article title. All other reference columns are left blank.
+
+**Example:**
+
+```csv
+book,chapter_start,verse_start,chapter_end,verse_end,assignment_source,text
+Article,The Theology of Sacrifice,,,,article,"Sacrifice in the Old Testament is understood as..."
+Article,The Theology of Sacrifice,,,,article,"The Day of Atonement provides the fullest picture..."
+Article,Creation and Science,,,,article,"The relationship between Genesis 1 and modern cosmology..."
+```
+
+Consecutive rows sharing the same title are merged into a single article.
+
+**Browsing articles:**
+
+```
+byble exeg
+```
+
+Running `byble exeg` with no book displays a numbered list of all articles across all sources. Enter a number to read the full text.
 
 **Example:**
 
@@ -106,9 +132,9 @@ James, 1 Peter, 2 Peter, 1 John, 2 John, 3 John, Jude, Revelation
 |----------------------------------------------------|------------------|
 | Simple verse notes, one row per note               | Simple           |
 | Notes span multi-verse ranges within one chapter   | Simple (add `verse_end`) |
-| Notes span multiple chapters                       | Andrews Structured |
-| Book has introductory sections                     | Andrews Structured |
-| Data was extracted from a PDF via a script         | Andrews Structured |
+| Notes span multiple chapters                       | Advanced Structured |
+| Book has introductory sections                     | Advanced Structured |
+| Data was extracted from a PDF via a script         | Advanced Structured |
 | Manually typed or exported from a study app        | Simple           |
 
 ---

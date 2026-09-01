@@ -103,7 +103,7 @@ def parse_input(args):
         result["error"] = "No input provided. Example: byble John 3:16"
         return result
 
-    # --- check for mode-first syntax: byble Con H7225 ---
+    # --- check for mode-first syntax: byble Con H7225  OR  byble Exeg ---
     if tokens[0].lower() in MODES:
         for token in tokens:
             lower = token.lower()

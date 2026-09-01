@@ -57,7 +57,7 @@ See [`Add ons/CSV_IMPORT_GUIDE.md`](Add%20ons/CSV_IMPORT_GUIDE.md) for how to st
 
 | File | Description |
 |------|-------------|
-| `Add ons/Andrews OT.csv` | Andrews University OT Commentary (structured format) |
+| `Add ons/<your_commentary>.csv` | Commentary in Advanced Structured format (see Add ons/CSV_IMPORT_GUIDE.md) |
 | `Add ons/sda_bible_commentary.csv` | SDA Bible Commentary verse notes |
 
 > **Note:** `bible.db` and the `data/` folder are not tracked in git (too large). Run `setup/build_db.py` to generate them locally.

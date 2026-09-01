@@ -2,7 +2,7 @@
 
 Bybletoolz is a local Bible study tool for the terminal. It stores the full Bible text in five public-domain translations, Strong's Hebrew and Greek lexicons enriched with Brown-Driver-Briggs and Thayer's definitions, morphological word tagging, and 430,000+ cross-references in a single local SQLite database. No internet connection is needed after the initial setup — all data stays on your machine.
 
-Four study modes are available: **Lex** looks up original-language word meanings via Strong's numbering; **Con** traces a word across the entire Bible by its Hebrew or Greek root; **Cross** surfaces thematically and textually linked passages; and **Exeg** displays verse-by-verse commentary from sources you import. An import system supports bringing in custom cross-references, lexicon entries, and commentary from CSV/TSV files or e-Sword SQLite modules — including commercial resources such as BDAG, Zodhiates, or the Andrews University Commentary.
+Four study modes are available: **Lex** looks up original-language word meanings via Strong's numbering; **Con** traces a word across the entire Bible by its Hebrew or Greek root; **Cross** surfaces thematically and textually linked passages; and **Exeg** displays verse-by-verse commentary from sources you import. An import system supports bringing in custom cross-references, lexicon entries, and commentary from CSV/TSV files or e-Sword SQLite modules — including commercial resources such as BDAG, Zodhiates, or academic Bible commentaries in structured CSV format.
 
 ---
 
@@ -329,7 +329,7 @@ Commentary sources:
   Matthew Henry        — 31,102 notes  (Full Bible)
   Keil & Delitzsch     —  8,943 notes  (OT only)
   Vincent's Word Stud  —  3,566 notes  (NT only)
-  Andrews University   —  4,201 notes  (Matthew, Mark, Luke, John … (12 books))
+  NT Commentary        —  4,201 notes  (Matthew, Mark, Luke, John … (12 books))
   My Romans Notes      —      3 notes  (Romans)
 ```
 
@@ -388,7 +388,7 @@ Romans,8,28,30,"The golden chain — verses 28–30 form a single theological un
 Romans,8,31,,"If God is for us — a standalone note on verse 31"
 ```
 
-For notes that span multiple chapters, use the Andrews structured layout instead (see XLSX section below).
+For notes that span multiple chapters, use the Advanced Structured layout instead (see XLSX section below).
 
 **XLSX / CSV (structured)** — Three layouts are auto-detected by column headers:
 
@@ -399,24 +399,23 @@ For notes that span multiple chapters, use the Andrews structured layout instead
 byble import exeg  sda_bible_commentary.xlsx  "SDA Bible Commentary"
 ```
 
-*Andrews structured layout* — `book, chapter_start, verse_start, chapter_end, verse_end, assignment_source, text`. Used by the Andrews Bible Commentary structured export and similar scholarly commentary exports where each paragraph carries explicit scope metadata. Only rows with `assignment_source` of `explicit_scope` or `carried_scope` are imported; paragraphs sharing the same scope are merged into a single note. Supports cross-chapter ranges (e.g. `Genesis 1:1–11:26`). Works as both CSV and XLSX.
+*Advanced Structured layout* — `book, chapter_start, verse_start, chapter_end, verse_end, assignment_source, text`. Used for scholarly commentary exports where each paragraph carries explicit scope metadata. Only rows with `assignment_source` of `explicit_scope`, `carried_scope`, `book_introduction`, or `article` are imported; paragraphs sharing the same scope are merged into a single note. Supports cross-chapter ranges (e.g. `Genesis 1:1–11:26`). Works as both CSV and XLSX.
 ```
-byble import exeg  andrews_ot_structured.xlsx  "Andrews OT Commentary"
-byble import exeg  andrews_ot_structured.csv   "Andrews OT Commentary"
+byble import exeg  my_commentary.csv   "My Commentary"
 ```
 
 **e-Sword SQLite** — for modules downloaded or purchased through e-Sword (e-sword.net):
 
 - Cross-references: `.refi` files
 - Lexicons: `.dct` files (e.g. BDAG, Mounce, Zodhiates)
-- Commentary: `.cmtx` files (e.g. Matthew Henry, Adam Clarke, Albert Barnes, Andrews University)
+- Commentary: `.cmtx` files (e.g. Matthew Henry, Adam Clarke, Albert Barnes)
 
 Just point the import command at the file:
 ```
 byble import xref  my_crossrefs.refi    "Treasury of Scripture Knowledge"
 byble import lex   bdag.dct             "BDAG Greek Lexicon"
 byble import exeg  matthew_henry.cmtx   "Matthew Henry"
-byble import exeg  andrews.cmtx         "Andrews University Commentary"
+byble import exeg  commentary.cmtx      "My Commentary"
 ```
 
 ### Notes

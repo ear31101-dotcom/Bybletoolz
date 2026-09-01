@@ -6,19 +6,16 @@ This folder contains exegetical commentary sources that can be imported into Byb
 
 ## Included Sources
 
-### Andrews OT Commentary (`Andrews OT.csv`)
+### OT Commentary (Advanced Structured CSV)
 
-**Full title:** Andrews Bible Commentary — Old Testament  
-**Publisher:** Andrews University Press (2020)  
-**General Editor:** Angel Manuel Rodriguez  
 **Coverage:** Genesis through Malachi (39 books)  
 **Format:** Advanced Structured CSV (see import guide)
 
-An academic Seventh-day Adventist commentary on the entire Old Testament. Notes are organized by verse range and include book-level introductions for each OT book. Coverage includes exegetical analysis, historical background, literary structure, and theological themes. Cross-chapter note ranges are preserved (e.g. Genesis 1:1–11:26).
+An academic commentary on the Old Testament. Notes are organized by verse range and include book-level introductions for each OT book. Coverage includes exegetical analysis, historical background, literary structure, and theological themes. Cross-chapter note ranges are preserved (e.g. Genesis 1:1–11:26).
 
 **Import command:**
 ```bash
-byble import exeg "Add ons/Andrews OT.csv" "Andrews OT Commentary"
+byble import exeg "Add ons/<your_file>.csv" "OT Commentary"
 ```
 
 ---
